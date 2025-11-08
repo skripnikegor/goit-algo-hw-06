@@ -22,6 +22,13 @@ class Phone(Field):
     def __validate_number(self, phone_number):
         pattern = r'^\d{10}$'
         return bool(re.match(pattern, phone_number))
+    
+    def __eq__(self, other):
+        if isinstance(other, Phone):
+            return self.value == other.value
+        if isinstance(other, str):
+            return self.value == other
+        return False
 
 class Record:
     def __init__(self, name):
@@ -34,12 +41,12 @@ class Record:
 
     def remove_phone(self, phone_number: Phone):
         for phone in self.phones:
-            if str(phone_number) == str(phone):
-              self.phones.remove(phone)
+            if phone_number == phone:
+                self.phones.remove(phone)
     
     def edit_phone(self, old_number, new_number):
         for phone in self.phones:
-            if old_number == str(phone):
+            if old_number == phone:
                 self.phones.remove(phone)
                 self.add_phone(new_number)
                 break
@@ -48,10 +55,10 @@ class Record:
                  
     def find_phone(self, phone_number):
         for phone in self.phones:
-            if str(phone_number) == str(phone):
+            if phone_number == phone:
                 return phone
-            else:
-                return None
+        else:
+            return None
 
     def __str__(self):
         return f"Contact name: {self.name}, phones: {'; '.join(p.value for p in self.phones)}"
@@ -80,7 +87,6 @@ book = AddressBook()
 john_record = Record("John")
 john_record.add_phone("1234567890")
 john_record.add_phone("5555555555")
-
 
 # Додавання запису John до адресної книги
 book.add_record(john_record)
@@ -111,3 +117,7 @@ print(book.__str__())
 
 # Видалення запису Jane
 book.delete("Jane")
+
+
+john.edit_phone("1234567890", "1112223333")
+print(john)
